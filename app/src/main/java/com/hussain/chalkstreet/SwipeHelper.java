@@ -5,6 +5,12 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 
 public class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     Adapter adapter;
+
+    /**
+     * Class to implement swipe in recycler view
+     * @param dragDirs
+     * @param swipeDirs
+     */
     public SwipeHelper(int dragDirs, int swipeDirs) {
         super(dragDirs, swipeDirs);
     }

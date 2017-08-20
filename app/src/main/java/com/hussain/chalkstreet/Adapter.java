@@ -23,7 +23,10 @@ public class Adapter  extends RecyclerView.Adapter<Adapter.ViewHolder>{
     private ArrayList<String> name;
     int i=0;
 
-
+    /**
+     * Adapter to load elements into recycler view
+     * @param name -  Used to store title of the name file
+     */
 
 
     public Adapter(ArrayList<String> name) {
@@ -47,6 +50,10 @@ public class Adapter  extends RecyclerView.Adapter<Adapter.ViewHolder>{
 
     }
 
+    /**
+     * Returns size of Recycler view
+     * @return
+     */
     @Override
     public int getItemCount() {
         return name.size();

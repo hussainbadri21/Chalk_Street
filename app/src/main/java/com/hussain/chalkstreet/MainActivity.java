@@ -30,8 +30,10 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
+/**
+ * Activity which contains the recycler view
+ * and where recording and playback of video is done
+ */
 
 public class MainActivity extends AppCompatActivity  {
     ArrayList<String> name;
@@ -53,7 +55,7 @@ Map <Integer,String> m;
 
 
         setContentView(R.layout.recycler);
-
+       //Function to initialize UI components
         initViews();
 
     }
@@ -65,6 +67,8 @@ Map <Integer,String> m;
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         name = new ArrayList<String>();
+        /*Hashmap to store position of recycler view item
+         and location where the video is stored*/
         m=new HashMap<Integer,String>();
 
         name.add("1");
@@ -77,7 +81,7 @@ Map <Integer,String> m;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //recorded=false;
+          //Adding first element of recycler view
                 name.add(String.valueOf(i));
                 i++;
                 adapter.notifyDataSetChanged();
@@ -124,7 +128,7 @@ Map <Integer,String> m;
                                 playFlag=true;
                             }
                         });
-
+                         //Event which occurs when camera change button is clicked
                         change.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View v) {
@@ -132,7 +136,7 @@ Map <Integer,String> m;
                                     mCamera.stopPreview();
 
                                 }
-//
+
                                 mCamera.release();
 
 
@@ -191,16 +195,13 @@ Map <Integer,String> m;
                                     mCamera.stopPreview();
                                     recorded = false;
                                 }
-                            //    mMediaRecorder.reset();
-                              //  mMediaRecorder.release();
-                               // mCamera.release();
 
-                                // once the objects have been released they can't be reused
                                 mMediaRecorder = null;
                                 mCamera = null;
 
                             }
                         });
+                        //Recording Video
                         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
                                 try {
@@ -223,6 +224,7 @@ Map <Integer,String> m;
                                         z=position+1;
                                        if(!recorded  && playFlag )
                                        {
+                                           //Playing Video inside card
                                                 mSurfaceView.setVisibility(View.GONE);
                                                 RelativeLayout layout = (RelativeLayout) findViewById(R.id.rl);
                                                 VideoView video = new VideoView(getApplicationContext());
@@ -265,7 +267,7 @@ Map <Integer,String> m;
 
 
 
-
+//Initializing Camera
     private void initRecorder(Surface surface,int position) throws IOException {
 
         if(mCamera == null) {
@@ -287,6 +289,7 @@ Map <Integer,String> m;
         mMediaRecorder.setVideoFrameRate(30);
 
         mMediaRecorder.setVideoSize(640, 480);
+        //Location where the video file is stored
         String loc="/storage/emulated/0/vid"+(position+1)+".mp4";
         mMediaRecorder.setOutputFile(loc);
         m.put((position+1),loc);
