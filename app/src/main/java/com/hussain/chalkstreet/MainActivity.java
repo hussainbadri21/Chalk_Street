@@ -222,7 +222,7 @@ Map <Integer,String> m;
                                         Log.e("link",String.valueOf(m.get(position+1)));
 
                                         z=position+1;
-                                       if(!recorded  && playFlag )
+                                      /* if(!recorded  && playFlag )
                                        {
                                            //Playing Video inside card
                                                 mSurfaceView.setVisibility(View.GONE);
@@ -231,7 +231,7 @@ Map <Integer,String> m;
                                                 video.setVideoPath(String.valueOf(m.get(z)));
                                                 video.setLayoutParams(new FrameLayout.LayoutParams(550, 550));
                                                 layout.addView(video);
-                                            }
+                                            }*/
 
 
 
