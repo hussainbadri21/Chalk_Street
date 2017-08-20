@@ -17,27 +17,35 @@ import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
+import android.widget.VideoView;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
 public class MainActivity extends AppCompatActivity  {
     ArrayList<String> name;
-    int i = 2;
+    FloatingActionButton play;
+    int i = 2,z=0;
     private MediaRecorder mMediaRecorder;
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private SurfaceHolder mHolder;
     boolean recorded=false;
-
+  private int currentCameraId=0;
     private boolean mInitSuccesful;
-
+Map <Integer,String> m;
+    Boolean playFlag=false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +65,8 @@ public class MainActivity extends AppCompatActivity  {
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         name = new ArrayList<String>();
+        m=new HashMap<Integer,String>();
+
         name.add("1");
 
         final RecyclerView.Adapter adapter = new Adapter(name);
@@ -67,6 +77,7 @@ public class MainActivity extends AppCompatActivity  {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                //recorded=false;
                 name.add(String.valueOf(i));
                 i++;
                 adapter.notifyDataSetChanged();
@@ -88,6 +99,7 @@ public class MainActivity extends AppCompatActivity  {
             public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
                 int position=0;
 
+
                 View child = rv.findChildViewUnder(e.getX(), e.getY());
                 if (child != null && gestureDetector.onTouchEvent(e)) {
                     position = rv.getChildAdapterPosition(child);
@@ -98,12 +110,54 @@ public class MainActivity extends AppCompatActivity  {
 
 
                         mSurfaceView = (SurfaceView) child.findViewById(R.id.CameraView);
-                        FloatingActionButton play=(FloatingActionButton) child.findViewById(R.id.play);
+                         play=(FloatingActionButton) child.findViewById(R.id.play);
                         FloatingActionButton pause=(FloatingActionButton) child.findViewById(R.id.stop);
                         FloatingActionButton delete=(FloatingActionButton) child.findViewById(R.id.delete);
+                        FloatingActionButton change=(FloatingActionButton) child.findViewById(R.id.change);
                         play.setVisibility(View.GONE);
                         pause.setVisibility(View.GONE);
                         delete.setVisibility(View.GONE);
+                          z=position+1;
+                        play.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                playFlag=true;
+                            }
+                        });
+
+                        change.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (recorded) {
+                                    mCamera.stopPreview();
+
+                                }
+//
+                                mCamera.release();
+
+
+                                if(currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK){
+                                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                                }
+                                else {
+                                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+                                }
+                                mCamera = Camera.open(currentCameraId);
+
+                               
+                               try {
+
+                                    mCamera.setPreviewDisplay(mHolder);
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                mCamera.startPreview();
+                                recorded=false;
+                            }
+
+
+                        });
 
                         mHolder = mSurfaceView.getHolder();
                         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -114,8 +168,11 @@ public class MainActivity extends AppCompatActivity  {
                             @Override
                             public void surfaceCreated(SurfaceHolder holder) {
                                 try {
+
                                     if (!mInitSuccesful) {
+
                                         mMediaRecorder.prepare();
+
                                     }
 
                                 } catch (IOException e) {
@@ -130,9 +187,13 @@ public class MainActivity extends AppCompatActivity  {
 
                             @Override
                             public void surfaceDestroyed(SurfaceHolder holder) {
-                                mMediaRecorder.reset();
-                                mMediaRecorder.release();
-                                mCamera.release();
+                                if(recorded) {
+                                    mCamera.stopPreview();
+                                    recorded = false;
+                                }
+                            //    mMediaRecorder.reset();
+                              //  mMediaRecorder.release();
+                               // mCamera.release();
 
                                 // once the objects have been released they can't be reused
                                 mMediaRecorder = null;
@@ -145,13 +206,31 @@ public class MainActivity extends AppCompatActivity  {
                                 try {
                                     if (!recorded) {
                                         Toast.makeText(getApplicationContext(), "Recording", Toast.LENGTH_SHORT).show();
-                                        initRecorder(mHolder.getSurface());
+                                        initRecorder(mHolder.getSurface(),position);
                                         mMediaRecorder.start();
                                         recorded = true;
                                     } else {
                                         mMediaRecorder.stop();
                                         Toast.makeText(getApplicationContext(), "Recorded", Toast.LENGTH_SHORT).show();
-                                        recorded = false;
+                                        mCamera.stopPreview();
+                                        play.setVisibility(View.VISIBLE);
+                                        pause.setVisibility(View.VISIBLE);
+                                        delete.setVisibility(View.VISIBLE);
+                                        change.setVisibility(View.GONE);
+                                        //recorded = false;
+                                        Log.e("link",String.valueOf(m.get(position+1)));
+
+                                        z=position+1;
+                                       if(!recorded  && playFlag )
+                                       {
+                                                mSurfaceView.setVisibility(View.GONE);
+                                                RelativeLayout layout = (RelativeLayout) findViewById(R.id.rl);
+                                                VideoView video = new VideoView(getApplicationContext());
+                                                video.setVideoPath(String.valueOf(m.get(z)));
+                                                video.setLayoutParams(new FrameLayout.LayoutParams(550, 550));
+                                                layout.addView(video);
+                                            }
+
 
 
                                     }
@@ -164,7 +243,7 @@ public class MainActivity extends AppCompatActivity  {
 
                     }
 
-                    Toast.makeText(getApplicationContext(), String.valueOf(name.get(position)), Toast.LENGTH_SHORT).show();
+                   // Toast.makeText(getApplicationContext(), String.valueOf(name.get(position)), Toast.LENGTH_SHORT).show();
 
                 }
                 return false;
@@ -172,7 +251,7 @@ public class MainActivity extends AppCompatActivity  {
 
             @Override
             public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-                Toast.makeText(getApplicationContext(), "touched", Toast.LENGTH_SHORT).show();
+
 
 
             }
@@ -186,12 +265,15 @@ public class MainActivity extends AppCompatActivity  {
 
 
 
-    private void initRecorder(Surface surface) throws IOException {
+
+    private void initRecorder(Surface surface,int position) throws IOException {
 
         if(mCamera == null) {
             mCamera = Camera.open();
             mCamera.unlock();
+
         }
+
 
         if(mMediaRecorder == null)  mMediaRecorder = new MediaRecorder();
         mMediaRecorder.setPreviewDisplay(surface);
@@ -203,8 +285,11 @@ public class MainActivity extends AppCompatActivity  {
         mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
         mMediaRecorder.setVideoEncodingBitRate(512 * 1000);
         mMediaRecorder.setVideoFrameRate(30);
+
         mMediaRecorder.setVideoSize(640, 480);
-        mMediaRecorder.setOutputFile("/storage/emulated/0/vid.mp4");
+        String loc="/storage/emulated/0/vid"+(position+1)+".mp4";
+        mMediaRecorder.setOutputFile(loc);
+        m.put((position+1),loc);
 
         try {
             mMediaRecorder.prepare();
