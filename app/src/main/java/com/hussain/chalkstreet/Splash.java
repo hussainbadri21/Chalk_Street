@@ -1,5 +1,6 @@
 package com.hussain.chalkstreet;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
@@ -8,6 +9,8 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.facebook.shimmer.ShimmerFrameLayout;
+
+import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 
 public class Splash extends AppCompatActivity {
 
@@ -36,5 +39,9 @@ public class Splash extends AppCompatActivity {
                 Splash.this.finish();
             }
         }, SPLASH_DISPLAY_LENGTH);
+    }
+    @Override
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(CalligraphyContextWrapper.wrap(newBase));
     }
 }

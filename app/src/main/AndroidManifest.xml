@@ -34,7 +34,6 @@
             </intent-filter>
         </activity>
         <activity android:name=".Adapter"></activity>
-        <activity android:name=".VideoCapture"></activity>
     </application>
 
 </manifest>

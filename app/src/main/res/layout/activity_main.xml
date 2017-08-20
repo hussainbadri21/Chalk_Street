@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="wrap_content"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
 
     >
 
@@ -8,6 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="9dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:id="@+id/cv"
         >
 
@@ -16,14 +20,10 @@
             android:layout_height="wrap_content"
             android:padding="16dp"
             >
-            <SurfaceView android:id="@+id/CameraView" android:layout_width="match_parent" android:layout_height="200dp">
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content" />
+            <SurfaceView android:id="@+id/CameraView" android:layout_width="match_parent" android:layout_height="200dp"/>
 
 
 
-            </SurfaceView>
 
 
             <TextView
@@ -32,9 +32,59 @@
                 android:id="@+id/title"
                 android:layout_below="@+id/CameraView"
                 android:text="@string/app_name"
+                android:layout_centerInParent="true"
 
                 android:textSize="20sp"
                 />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_below="@+id/title"
+               android:layout_marginTop="25dp"
+android:layout_centerHorizontal="true"
+                android:layout_height="wrap_content">
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:fabSize="mini"
+                    app:backgroundTint="#F44336"
+                    android:src="@drawable/cross"
+                    android:id="@+id/delete"
+                    android:layout_margin="8dp"
+                    />
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:fabSize="mini"
+                app:backgroundTint="#ffffff"
+                android:src="@drawable/play"
+                android:id="@+id/play"
+                android:layout_margin="8dp"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                app:fabSize="mini"
+                app:backgroundTint="#ffffff"
+                android:src="@drawable/pause"
+                android:id="@+id/stop"
+                android:layout_margin="8dp"
+                />
+
+
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:fabSize="mini"
+                    app:backgroundTint="#000000"
+                    android:src="@drawable/change"
+                    android:id="@+id/change"
+                    android:layout_margin="8dp"
+                    />
+
+
+            </LinearLayout>
 
         </RelativeLayout>
 
