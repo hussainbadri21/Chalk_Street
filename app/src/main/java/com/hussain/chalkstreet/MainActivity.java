@@ -39,13 +39,9 @@ public class MainActivity extends AppCompatActivity  {
     ArrayList<String> name;
     FloatingActionButton play;
     int i = 2,z=0;
-    private MediaRecorder mMediaRecorder;
-    private Camera mCamera;
-    private SurfaceView mSurfaceView;
-    private SurfaceHolder mHolder;
-    boolean recorded=false;
+
   private int currentCameraId=0;
-    private boolean mInitSuccesful;
+
 Map <Integer,String> m;
     Boolean playFlag=false;
 
@@ -63,13 +59,15 @@ Map <Integer,String> m;
     private void initViews() {
         RecyclerView recyclerView = (RecyclerView) findViewById(R.id.rv);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton delete= (FloatingActionButton) findViewById(R.id.delete);
+
         recyclerView.setHasFixedSize(true);
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(getApplicationContext());
         recyclerView.setLayoutManager(layoutManager);
         name = new ArrayList<String>();
         /*Hashmap to store position of recycler view item
          and location where the video is stored*/
-        m=new HashMap<Integer,String>();
+        m = new HashMap<Integer, String>();
 
         name.add("1");
 
@@ -81,7 +79,7 @@ Map <Integer,String> m;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-          //Adding first element of recycler view
+                //Adding first element of recycler view
                 name.add(String.valueOf(i));
                 i++;
                 adapter.notifyDataSetChanged();
@@ -89,219 +87,80 @@ Map <Integer,String> m;
         });
 
 
-        recyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            GestureDetector gestureDetector = new GestureDetector(getApplicationContext(), new GestureDetector.SimpleOnGestureListener() {
+        /*int position=0;
 
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
+                play=(FloatingActionButton) child.findViewById(R.id.play);
+                FloatingActionButton pause=(FloatingActionButton) child.findViewById(R.id.stop);
+                FloatingActionButton delete=(FloatingActionButton) child.findViewById(R.id.delete);
+                FloatingActionButton change=(FloatingActionButton) child.findViewById(R.id.change);
+                play.setVisibility(View.GONE);
+                pause.setVisibility(View.GONE);
+                delete.setVisibility(View.GONE);
+                z=position+1;
+                play.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        playFlag=true;
+                    }
+                });
+                //Event which occurs when camera change button is clicked
+                change.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (recorded) {
+                            mCamera.stopPreview();
 
-            });
+                        }
 
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                int position=0;
-
-
-                View child = rv.findChildViewUnder(e.getX(), e.getY());
-                if (child != null && gestureDetector.onTouchEvent(e)) {
-                    position = rv.getChildAdapterPosition(child);
-                    Log.e("ffs", String.valueOf(adapter.getItemCount()) + " " + position);
-
-
-                    if (position + 1 == adapter.getItemCount()) {
-
-
-                        mSurfaceView = (SurfaceView) child.findViewById(R.id.CameraView);
-                         play=(FloatingActionButton) child.findViewById(R.id.play);
-                        FloatingActionButton pause=(FloatingActionButton) child.findViewById(R.id.stop);
-                        FloatingActionButton delete=(FloatingActionButton) child.findViewById(R.id.delete);
-                        FloatingActionButton change=(FloatingActionButton) child.findViewById(R.id.change);
-                        play.setVisibility(View.GONE);
-                        pause.setVisibility(View.GONE);
-                        delete.setVisibility(View.GONE);
-                          z=position+1;
-                        play.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                playFlag=true;
-                            }
-                        });
-                         //Event which occurs when camera change button is clicked
-                        change.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (recorded) {
-                                    mCamera.stopPreview();
-
-                                }
-
-                                mCamera.release();
+                        mCamera.release();
 
 
-                                if(currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK){
-                                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
-                                }
-                                else {
-                                    currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
-                                }
-                                mCamera = Camera.open(currentCameraId);
-
-                               
-                               try {
-
-                                    mCamera.setPreviewDisplay(mHolder);
-
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                                mCamera.startPreview();
-                                recorded=false;
-                            }
+                        if(currentCameraId == Camera.CameraInfo.CAMERA_FACING_BACK){
+                            currentCameraId = Camera.CameraInfo.CAMERA_FACING_FRONT;
+                        }
+                        else {
+                            currentCameraId = Camera.CameraInfo.CAMERA_FACING_BACK;
+                        }
+                        mCamera = Camera.open(currentCameraId);
 
 
-                        });
+                        try {
 
-                        mHolder = mSurfaceView.getHolder();
-                        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+                            mCamera.setPreviewDisplay(mHolder);
 
-
-
-                        mHolder.addCallback(new SurfaceHolder.Callback() {
-                            @Override
-                            public void surfaceCreated(SurfaceHolder holder) {
-                                try {
-
-                                    if (!mInitSuccesful) {
-
-                                        mMediaRecorder.prepare();
-
-                                    }
-
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-
-                            @Override
-                            public void surfaceChanged(SurfaceHolder holder, int format, int width, int height) {
-
-                            }
-
-                            @Override
-                            public void surfaceDestroyed(SurfaceHolder holder) {
-                                if(recorded) {
-                                    mCamera.stopPreview();
-                                    recorded = false;
-                                }
-
-                                mMediaRecorder = null;
-                                mCamera = null;
-
-                            }
-                        });
-                        //Recording Video
-                        mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
-
-                                try {
-                                    if (!recorded) {
-                                        Toast.makeText(getApplicationContext(), "Recording", Toast.LENGTH_SHORT).show();
-                                        initRecorder(mHolder.getSurface(),position);
-                                        mMediaRecorder.start();
-                                        recorded = true;
-                                    } else {
-                                        mMediaRecorder.stop();
-                                        Toast.makeText(getApplicationContext(), "Recorded", Toast.LENGTH_SHORT).show();
-                                        mCamera.stopPreview();
-                                        play.setVisibility(View.VISIBLE);
-                                        pause.setVisibility(View.VISIBLE);
-                                        delete.setVisibility(View.VISIBLE);
-                                        change.setVisibility(View.GONE);
-                                        //recorded = false;
-                                        Log.e("link",String.valueOf(m.get(position+1)));
-
-                                        z=position+1;
-                                      /* if(!recorded  && playFlag )
-                                       {
-                                           //Playing Video inside card
-                                                mSurfaceView.setVisibility(View.GONE);
-                                                RelativeLayout layout = (RelativeLayout) findViewById(R.id.rl);
-                                                VideoView video = new VideoView(getApplicationContext());
-                                                video.setVideoPath(String.valueOf(m.get(z)));
-                                                video.setLayoutParams(new FrameLayout.LayoutParams(550, 550));
-                                                layout.addView(video);
-                                            }*/
-
-
-
-                                    }
-                                } catch (IOException e1) {
-                                    e1.printStackTrace();
-
-
-                                finish();
-                            }
-
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        mCamera.startPreview();
+                        recorded=false;
                     }
 
-                   // Toast.makeText(getApplicationContext(), String.valueOf(name.get(position)), Toast.LENGTH_SHORT).show();
 
-                }
-                return false;
-            }
-
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+                });
 
 
 
-            }
+            }*/
 
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+            // Toast.makeText(getApplicationContext(), String.valueOf(name.get(position)), Toast.LENGTH_SHORT).show();
 
-            }
-        });
-    }
+        }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 //Initializing Camera
-    private void initRecorder(Surface surface,int position) throws IOException {
-
-        if(mCamera == null) {
-            mCamera = Camera.open();
-            mCamera.unlock();
-
-        }
-
-
-        if(mMediaRecorder == null)  mMediaRecorder = new MediaRecorder();
-        mMediaRecorder.setPreviewDisplay(surface);
-        mMediaRecorder.setCamera(mCamera);
-
-        mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.DEFAULT);
-        //       mMediaRecorder.setOutputFormat(8);
-        mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-        mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
-        mMediaRecorder.setVideoEncodingBitRate(512 * 1000);
-        mMediaRecorder.setVideoFrameRate(30);
-
-        mMediaRecorder.setVideoSize(640, 480);
-        //Location where the video file is stored
-        String loc="/storage/emulated/0/vid"+(position+1)+".mp4";
-        mMediaRecorder.setOutputFile(loc);
-        m.put((position+1),loc);
-
-        try {
-            mMediaRecorder.prepare();
-        } catch (IllegalStateException e) {
-
-            e.printStackTrace();
-        }
-        mInitSuccesful = true;
-    }
 
 
 

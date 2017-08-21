@@ -44,17 +44,9 @@
                 android:layout_width="wrap_content"
                 android:layout_below="@+id/title"
                android:layout_marginTop="10dp"
-android:layout_centerHorizontal="true"
+                android:layout_centerHorizontal="true"
                 android:layout_height="wrap_content">
-                <android.support.design.widget.FloatingActionButton
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    app:fabSize="mini"
-                    app:backgroundTint="#F44336"
-                    android:src="@drawable/cross"
-                    android:id="@+id/delete"
-                    android:layout_margin="8dp"
-                    />
+
             <android.support.design.widget.FloatingActionButton
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
@@ -85,6 +77,25 @@ android:layout_centerHorizontal="true"
                     android:id="@+id/change"
                     android:layout_margin="8dp"
                     />
+                <android.support.design.widget.FloatingActionButton
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    app:fabSize="mini"
+                    app:backgroundTint="#ffffff"
+                    android:src="@drawable/stop"
+                    android:id="@+id/record"
+                    android:layout_margin="8dp"
+                    />
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        app:fabSize="mini"
+        app:backgroundTint="#F44336"
+        android:src="@drawable/cross"
+        android:id="@+id/delete"
+        android:layout_margin="8dp"
+        />
 
 
             </LinearLayout>
